@@ -356,7 +356,7 @@ Quick Health Report Sections:
               color: Colors.red.shade100,
               padding: const EdgeInsets.all(8.0),
               child: const Text(
-                'API connection failed. Some features may not work correctly.',
+                '',
                 style: TextStyle(
                   color: Colors.red,
                   fontWeight: FontWeight.bold,
