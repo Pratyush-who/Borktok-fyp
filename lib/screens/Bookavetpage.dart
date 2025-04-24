@@ -144,7 +144,7 @@ class _BookavetpageState extends State<Bookavetpage> {
         foregroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Book a Vet Appointment',
+          'Book an Appointment for your furry friend',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
