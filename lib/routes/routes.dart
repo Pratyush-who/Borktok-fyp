@@ -1,5 +1,7 @@
 import 'package:borktok/auth/wrapper.dart';
 import 'package:borktok/screens/Bookavetpage.dart';
+import 'package:borktok/screens/lost%20nd%20found/FoundDogPage.dart';
+import 'package:borktok/screens/lost%20nd%20found/LostDogPage.dart';
 import 'package:borktok/screens/NgoPage.dart';
 import 'package:borktok/screens/buy%20and%20sell/doglisting.dart';
 import 'package:borktok/screens/login_screen.dart';
@@ -33,6 +35,8 @@ class Routes {
   static const String profile = '/profile';
   static const String dogListings = '/dogListings';
   static const String bookavet = '/bookavet';
+  static const String lost = '/lost';
+  static const String found = '/found';
   static const String ngopage = '/ngopage';
   static const String unknown = '/unknown'; // Added unknown route constant
 
@@ -67,6 +71,10 @@ class Routes {
         return MaterialPageRoute(builder: (context) => const BuySell());
       case profile:
         return MaterialPageRoute(builder: (context) => const ProfileScreen());
+      case lost:
+        return MaterialPageRoute(builder: (context) => const LostDogPage());
+      case found:
+        return MaterialPageRoute(builder: (context) => const FoundDogPage());
       case essentials:
         return MaterialPageRoute(builder: (context) => const Community());
       case store:

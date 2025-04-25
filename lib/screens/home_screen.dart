@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,8 +22,8 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     'BorkTok',
                     style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                      color: Theme.of(context).primaryColor,
-                    ),
+                          color: Theme.of(context).primaryColor,
+                        ),
                   ),
                 ],
               ),
@@ -54,15 +55,12 @@ class HomeScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     InkWell(
-                      onTap:
-                          () => Navigator.of(context).pushNamed(Routes.profile),
+                      onTap: () => Navigator.of(context).pushNamed(Routes.profile),
                       child: Row(
                         children: [
                           CircleAvatar(
                             radius: 30,
-                            backgroundColor: Theme.of(
-                              context,
-                            ).primaryColor.withOpacity(0.2),
+                            backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(30),
                               child: Image.asset('assets/user.jpg'),
@@ -74,8 +72,7 @@ class HomeScreen extends StatelessWidget {
                             children: [
                               Text(
                                 'Welcome, Pratyush!',
-                                style:
-                                    Theme.of(context).textTheme.headlineMedium,
+                                style: Theme.of(context).textTheme.headlineMedium,
                               ),
                               const SizedBox(height: 4),
                               Text(
@@ -101,13 +98,12 @@ class HomeScreen extends StatelessWidget {
                         scrollDirection: Axis.horizontal,
                         itemCount: 5,
                         itemBuilder: (context, index) {
-                          // List of more reliable image URLs
                           final dogPhotos = [
-                            'https://images.unsplash.com/photo-1586671267731-da2cf3ceeb80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80', // German Shepherd 1
-                            'https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80', // German Shepherd 2
-                            'https://images.unsplash.com/photo-1601758003122-53c40e686a19?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80', // Golden Retriever
-                            'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80', // Labrador
-                            'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80', // Beagle
+                            'https://images.unsplash.com/photo-1586671267731-da2cf3ceeb80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1601758003122-53c40e686a19?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
                           ];
 
                           return Container(
@@ -129,7 +125,6 @@ class HomeScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                               child: Stack(
                                 children: [
-                                  // Display the online dog photo with better error handling
                                   Image.network(
                                     dogPhotos[index],
                                     width: double.infinity,
@@ -143,15 +138,10 @@ class HomeScreen extends StatelessWidget {
                                       if (loadingProgress == null) return child;
                                       return Center(
                                         child: CircularProgressIndicator(
-                                          value:
-                                              loadingProgress
-                                                          .expectedTotalBytes !=
-                                                      null
-                                                  ? loadingProgress
-                                                          .cumulativeBytesLoaded /
-                                                      loadingProgress
-                                                          .expectedTotalBytes!
-                                                  : null,
+                                          value: loadingProgress.expectedTotalBytes != null
+                                              ? loadingProgress.cumulativeBytesLoaded /
+                                                  loadingProgress.expectedTotalBytes!
+                                              : null,
                                         ),
                                       );
                                     },
@@ -160,8 +150,7 @@ class HomeScreen extends StatelessWidget {
                                         color: Colors.grey[200],
                                         child: Center(
                                           child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                            mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
                                               Icon(
                                                 Icons.error,
@@ -278,9 +267,7 @@ class HomeScreen extends StatelessWidget {
                                       width: 60,
                                       height: 60,
                                       decoration: BoxDecoration(
-                                        color: Theme.of(
-                                          context,
-                                        ).primaryColor.withOpacity(0.1),
+                                        color: Theme.of(context).primaryColor.withOpacity(0.1),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Center(
@@ -298,23 +285,18 @@ class HomeScreen extends StatelessWidget {
                                     const SizedBox(width: 16),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             events[index],
-                                            style: Theme.of(
-                                              context,
-                                            ).textTheme.bodyLarge?.copyWith(
+                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
                                             dates[index],
-                                            style: Theme.of(
-                                              context,
-                                            ).textTheme.bodyMedium?.copyWith(
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                               color: Colors.grey.shade600,
                                             ),
                                           ),
@@ -324,13 +306,10 @@ class HomeScreen extends StatelessWidget {
                                     ElevatedButton(
                                       onPressed: () {},
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            Theme.of(context).primaryColor,
+                                        backgroundColor: Theme.of(context).primaryColor,
                                         foregroundColor: Colors.white,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
+                                          borderRadius: BorderRadius.circular(8),
                                         ),
                                       ),
                                       child: Text(index == 0 ? 'Join' : 'RSVP'),
@@ -355,7 +334,6 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            // Dog Friends Section
             // Dog Friends Section
             SliverToBoxAdapter(
               child: Padding(
@@ -442,7 +420,6 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                   child: Stack(
                                     children: [
-                                      // Display the online dog photo
                                       Image.network(
                                         tasveer[index],
                                         width: double.infinity,
@@ -453,19 +430,13 @@ class HomeScreen extends StatelessWidget {
                                           child,
                                           loadingProgress,
                                         ) {
-                                          if (loadingProgress == null)
-                                            return child;
+                                          if (loadingProgress == null) return child;
                                           return Center(
                                             child: CircularProgressIndicator(
-                                              value:
-                                                  loadingProgress
-                                                              .expectedTotalBytes !=
-                                                          null
-                                                      ? loadingProgress
-                                                              .cumulativeBytesLoaded /
-                                                          loadingProgress
-                                                              .expectedTotalBytes!
-                                                      : null,
+                                              value: loadingProgress.expectedTotalBytes != null
+                                                  ? loadingProgress.cumulativeBytesLoaded /
+                                                      loadingProgress.expectedTotalBytes!
+                                                  : null,
                                             ),
                                           );
                                         },
@@ -492,11 +463,8 @@ class HomeScreen extends StatelessWidget {
                                             horizontal: 8,
                                           ),
                                           decoration: BoxDecoration(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
+                                            color: Theme.of(context).primaryColor,
+                                            borderRadius: BorderRadius.circular(12),
                                           ),
                                           child: Text(
                                             distances[index],
@@ -514,45 +482,33 @@ class HomeScreen extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.all(12),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
                                           Text(
                                             'Charlie ${index + 1}',
-                                            style: Theme.of(
-                                              context,
-                                            ).textTheme.titleMedium?.copyWith(
+                                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                           const SizedBox(width: 4),
                                           Icon(
-                                            index % 2 == 0
-                                                ? Icons.male
-                                                : Icons.female,
+                                            index % 2 == 0 ? Icons.male : Icons.female,
                                             size: 16,
-                                            color:
-                                                index % 2 == 0
-                                                    ? Colors.blue
-                                                    : Colors.pink,
+                                            color: index % 2 == 0 ? Colors.blue : Colors.pink,
                                           ),
                                         ],
                                       ),
                                       Text(
                                         breeds[index],
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodyMedium?.copyWith(
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                           color: Colors.grey.shade600,
                                         ),
                                       ),
                                       Text(
                                         ages[index],
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodyMedium?.copyWith(
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                           color: Colors.grey.shade600,
                                         ),
                                       ),
@@ -563,23 +519,16 @@ class HomeScreen extends StatelessWidget {
                                           onPressed: () {},
                                           style: OutlinedButton.styleFrom(
                                             side: BorderSide(
-                                              color:
-                                                  Theme.of(
-                                                    context,
-                                                  ).primaryColor,
+                                              color: Theme.of(context).primaryColor,
                                             ),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
+                                              borderRadius: BorderRadius.circular(8),
                                             ),
                                           ),
                                           child: Text(
                                             'Connect',
                                             style: TextStyle(
-                                              color:
-                                                  Theme.of(
-                                                    context,
-                                                  ).primaryColor,
+                                              color: Theme.of(context).primaryColor,
                                             ),
                                           ),
                                         ),
@@ -598,290 +547,394 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
-            // Hero Banner (improved version)
+            // Combined Cards Section
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Container(
-                  height: 180,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    gradient: LinearGradient(
-                      colors: [
-                        Theme.of(context).primaryColor,
-                        Theme.of(context).colorScheme.secondary,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        spreadRadius: 0,
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        right: -20,
-                        bottom: -15,
-                        child: Icon(
-                          Icons.pets,
-                          size: 150,
-                          color: Colors.white.withOpacity(0.2),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        // Vet Booking Card (half width)
+                        Expanded(
+                          child: _buildVetBookingCard(context),
                         ),
+                        const SizedBox(width: 16),
+                        // NGO Card (half width)
+                        Expanded(
+                          child: _buildNGOCard(context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    // Lost & Found Card (full width below)
+                    _buildLostFoundCard(context),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVetBookingCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, Routes.bookavet),
+      child: Container(
+        height: 220,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).primaryColor,
+              Theme.of(context).colorScheme.secondary,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 0,
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              right: -20,
+              bottom: -15,
+              child: Icon(
+                Icons.pets,
+                size: 100,
+                color: Colors.white.withOpacity(0.2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.medical_services,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Book a Vet',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Professional care at your doorstep',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                  ),
+                  const Spacer(),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, Routes.bookavet);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Theme.of(context).primaryColor,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(24.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text('Book Now'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNGOCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, Routes.ngopage),
+      child: Container(
+        height: 220,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFF2E7D32), // Dark green
+              const Color(0xFF81C784), // Light green
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 0,
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              right: -10,
+              bottom: -10,
+              child: Icon(
+                Icons.pets,
+                size: 100,
+                color: Colors.white.withOpacity(0.2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5F5DC).withOpacity(0.9), // Beige
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.volunteer_activism,
+                      color: Color(0xFF2E7D32), // Dark green
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Dog NGOs',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Support dog rescue organizations',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                  ),
+                  const Spacer(),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, Routes.ngopage);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFF5F5DC), // Beige
+                      foregroundColor: const Color(0xFF2E7D32), // Dark green
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text('Explore'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLostFoundCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, Routes.lost),
+      child: Container(
+        height: 180,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 0,
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            // Background image
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.network(
+                  'https://media.istockphoto.com/id/1354843722/vector/a-child-on-a-winter-walk-plays-with-a-dog-the-kid-in-warm-winter-clothes-has-lost-his-pet.jpg?s=612x612&w=0&k=20&c=p7MFOY2Oq1I8gwyHHkV2rO3RT0qlMzy8h3atvoomA9o=',
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.grey[200],
+                      child: Center(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              'Book a offline vet for your dog.',
-                              style: Theme.of(context).textTheme.displayMedium
-                                  ?.copyWith(color: Colors.white, height: 1.2),
+                            Icon(
+                              Icons.error,
+                              color: Colors.red,
+                              size: 30,
                             ),
-                            SizedBox(height: 10),
+                            SizedBox(height: 4),
                             Text(
-                              'Get a professional vet at your doorstep.',
+                              'Image failed to load',
                               style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.white,
+                                fontSize: 10,
+                                color: Colors.grey[600],
                               ),
-                            ),
-                            const SizedBox(height: 6),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, Routes.bookavet);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: Theme.of(context).primaryColor,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: const Text('Book Now'),
                             ),
                           ],
                         ),
                       ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            // Gradient overlay
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Colors.white.withOpacity(0.8),
+                      Colors.transparent,
                     ],
+                    stops: [0.3, 0.8],
                   ),
                 ),
               ),
             ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, Routes.ngopage),
-                  child: Container(
-                    height: 280,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          spreadRadius: 0,
-                          blurRadius: 15,
-                          offset: const Offset(0, 5),
+            // Content
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor.withOpacity(0.9),
+                          shape: BoxShape.circle,
                         ),
-                      ],
+                        child: const Icon(
+                          Icons.pets,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Lost & Found Pets',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Help reunite lost pets with their families',
+                    style: TextStyle(
+                      color: Colors.grey.shade800,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                     ),
-                    child: Stack(
-                      children: [
-                        // Background with gradient overlay
-                        Positioned.fill(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Stack(
-                              children: [
-                                // Background image
-                                Image.asset(
-                                  'assets/dog_ngo.jpg', // Add this image to your assets
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  errorBuilder:
-                                      (context, error, stackTrace) => Container(
-                                        decoration: const BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: [
-                                              Color(0xFF2E7D32), // Dark green
-                                              Color(0xFF81C784), // Light green
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                ),
-                                // Gradient overlay
-                                Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topRight,
-                                      end: Alignment.bottomLeft,
-                                      colors: [
-                                        Colors.transparent,
-                                        Color(
-                                          0xFF2E7D32,
-                                        ).withOpacity(0.8), // Dark green
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
+                  ),
+                  const Spacer(),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, Routes.lost, arguments: 'lost');
+                          },
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: Theme.of(context).primaryColor),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            backgroundColor: Colors.white.withOpacity(0.7),
+                          ),
+                          child: Text(
+                            'Report Lost',
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-
-                        // Content
-                        Padding(
-                          padding: const EdgeInsets.all(24.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              // NGO Icon with circle background
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: const Color(
-                                    0xFFF5F5DC,
-                                  ).withOpacity(0.9), // Beige
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.volunteer_activism,
-                                  color: Color(0xFF2E7D32), // Dark green
-                                  size: 30,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-
-                              // Title
-                              Text(
-                                'Connect with Dog NGOs',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.headlineMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 3.0,
-                                      color: Colors.black.withOpacity(0.3),
-                                      offset: const Offset(0, 1),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-
-                              // Description
-                              Text(
-                                'Support organizations that rescue, shelter, and care for dogs in need',
-                                style: TextStyle(
-                                  color: const Color(0xFFF5F5DC), // Beige text
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 3.0,
-                                      color: Colors.black.withOpacity(0.3),
-                                      offset: const Offset(0, 1),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-
-                              // Button
-                              ElevatedButton(
-                                onPressed:
-                                    () => Navigator.pushNamed(
-                                      context,
-                                      Routes.ngopage,
-                                    ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(
-                                    0xFFF5F5DC,
-                                  ), // Beige
-                                  foregroundColor: const Color(
-                                    0xFF2E7D32,
-                                  ), // Dark green
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                    vertical: 12,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      'Explore NGOs',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    const Icon(
-                                      Icons.arrow_forward_rounded,
-                                      size: 18,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, Routes.found, arguments: 'found');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          child: Text(
+                            'Report Found',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-
-                        // Paw print decorations
-                        Positioned(
-                          top: 20,
-                          right: 20,
-                          child: Icon(
-                            Icons.pets,
-                            color: Colors.white.withOpacity(0.2),
-                            size: 28,
-                          ),
-                        ),
-                        Positioned(
-                          top: 60,
-                          right: 50,
-                          child: Icon(
-                            Icons.pets,
-                            color: Colors.white.withOpacity(0.15),
-                            size: 20,
-                          ),
-                        ),
-                        Positioned(
-                          top: 40,
-                          right: 80,
-                          child: Icon(
-                            Icons.pets,
-                            color: Colors.white.withOpacity(0.1),
-                            size: 16,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ),
+                ],
               ),
             ),
           ],

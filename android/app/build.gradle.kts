@@ -13,6 +13,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true  // This must be true
     }
 
     kotlinOptions {
@@ -32,6 +33,14 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+    dependencies {
+    // Add these exact dependencies:
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")  // Must be version 2.0.2+
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20")
+    
+    // Keep your other dependencies
+}
+
 }
 
 
