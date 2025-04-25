@@ -1,26 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class LostDogsProvider extends ChangeNotifier {
-  List<LostDog> _lostDogs = [];
-  List<LostDog> get lostDogs => _lostDogs;
-
-  void addLostDog(LostDog dog) {
-    _lostDogs.add(dog);
-    notifyListeners();
-  }
-
-  void cancelAlert(LostDog dog) {
-    _lostDogs.remove(dog);
-    notifyListeners();
-  }
-}
-
+// Data model for lost dogs
 class LostDog {
   final String name;
   final String breed;
@@ -45,6 +30,28 @@ class LostDog {
   });
 }
 
+// Singleton service to maintain state without Provider
+class LostDogService {
+  static final LostDogService _instance = LostDogService._internal();
+  
+  factory LostDogService() {
+    return _instance;
+  }
+  
+  LostDogService._internal();
+  
+  final List<LostDog> _lostDogs = [];
+  List<LostDog> get lostDogs => _lostDogs;
+  
+  void addLostDog(LostDog dog) {
+    _lostDogs.add(dog);
+  }
+  
+  void cancelAlert(LostDog dog) {
+    _lostDogs.remove(dog);
+  }
+}
+
 class LostDogPage extends StatefulWidget {
   const LostDogPage({Key? key}) : super(key: key);
 
@@ -59,6 +66,7 @@ class _LostDogPageState extends State<LostDogPage> {
   final TextEditingController _ownerNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
+  final LostDogService _lostDogService = LostDogService();
   File? _imageFile;
   bool _isLoading = false;
   String _currentAddress = "Fetching location...";
@@ -73,12 +81,71 @@ class _LostDogPageState extends State<LostDogPage> {
 
   Future<void> _requestLocationPermission() async {
     final status = await Permission.location.request();
+    
     if (status.isGranted) {
       _getCurrentLocation();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Location permission is required to report a lost pet'),
+    } else if (status.isDenied) {
+      setState(() {
+        _currentAddress = "Location permission denied. Using default location.";
+        _latitude = 28.6692; // Default coordinates
+        _longitude = 77.4538;
+      });
+      
+      // Show dialog explaining why location is needed
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Location Permission Required'),
+          content: const Text(
+            'Location permission is needed to accurately report where you found or lost your dog. This helps match lost and found pets in the same area.'
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                openAppSettings(); // Opens app settings to enable permission
+              },
+              child: const Text('Open Settings'),
+            ),
+          ],
+        ),
+      );
+    } else if (status.isPermanentlyDenied) {
+      setState(() {
+        _currentAddress = "Location access permanently denied. Using default location.";
+        _latitude = 28.6692; 
+        _longitude = 77.4538;
+      });
+      
+      // Guide user to settings
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Location Permission Denied'),
+          content: const Text(
+            'Location permission is permanently denied. Please enable it in app settings.'
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                openAppSettings();
+              },
+              child: const Text('Open Settings'),
+            ),
+          ],
         ),
       );
     }
@@ -152,25 +219,29 @@ class _LostDogPageState extends State<LostDogPage> {
         lostTime: DateTime.now(),
       );
 
-      // Add it to provider
-      Provider.of<LostDogsProvider>(
-        context,
-        listen: false,
-      ).addLostDog(newLostDog);
+      // Add it to service
+      _lostDogService.addLostDog(newLostDog);
 
-      // Show confirmation and mock sending notification
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Alert sent! Notifications have been sent to app users in your area.',
-          ),
+      // Show confirmation dialog
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Alert Sent Successfully'),
+          content: const Text('Your lost dog alert has been sent! Notifications have been sent to app users in your area.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                // Navigate to the list of active alerts
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ActiveAlertsPage()),
+                );
+              },
+              child: const Text('OK'),
+            ),
+          ],
         ),
-      );
-
-      // Navigate to the list of active alerts
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ActiveAlertsPage()),
       );
     }
   }
@@ -481,9 +552,18 @@ class _LostDogPageState extends State<LostDogPage> {
   }
 }
 
-class ActiveAlertsPage extends StatelessWidget {
+class ActiveAlertsPage extends StatefulWidget {
+  @override
+  _ActiveAlertsPageState createState() => _ActiveAlertsPageState();
+}
+
+class _ActiveAlertsPageState extends State<ActiveAlertsPage> {
+  final LostDogService _lostDogService = LostDogService();
+  
   @override
   Widget build(BuildContext context) {
+    final lostDogs = _lostDogService.lostDogs;
+    
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5DC),
       appBar: AppBar(
@@ -494,10 +574,8 @@ class ActiveAlertsPage extends StatelessWidget {
         ),
         elevation: 0,
       ),
-      body: Consumer<LostDogsProvider>(
-        builder: (context, provider, child) {
-          if (provider.lostDogs.isEmpty) {
-            return Center(
+      body: lostDogs.isEmpty 
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -513,224 +591,215 @@ class ActiveAlertsPage extends StatelessWidget {
                   ),
                 ],
               ),
-            );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: provider.lostDogs.length,
-            itemBuilder: (context, index) {
-              final dog = provider.lostDogs[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 16),
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Image
-                    ClipRRect(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(12),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: lostDogs.length,
+              itemBuilder: (context, index) {
+                final dog = lostDogs[index];
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Image
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(12),
+                        ),
+                        child: Image.file(
+                          dog.image!,
+                          height: 200,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      child: Image.file(
-                        dog.image!,
-                        height: 200,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
 
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Alert status
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Alert status
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.red[100],
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.warning_amber_rounded,
+                                    color: Colors.red[700],
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'LOST',
+                                    style: TextStyle(
+                                      color: Colors.red[700],
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            decoration: BoxDecoration(
-                              color: Colors.red[100],
-                              borderRadius: BorderRadius.circular(20),
+
+                            const SizedBox(height: 12),
+
+                            // Dog name and breed
+                            Text(
+                              dog.name,
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
+                            Text(
+                              dog.breed,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+                            const Divider(),
+                            const SizedBox(height: 8),
+
+                            // Location
+                            Row(
                               children: [
                                 Icon(
-                                  Icons.warning_amber_rounded,
-                                  color: Colors.red[700],
-                                  size: 16,
+                                  Icons.location_on,
+                                  color: Colors.grey[700],
+                                  size: 18,
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'LOST',
-                                  style: TextStyle(
-                                    color: Colors.red[700],
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    dog.location,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey[700],
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
 
-                          const SizedBox(height: 12),
+                            const SizedBox(height: 8),
 
-                          // Dog name and breed
-                          Text(
-                            dog.name,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            dog.breed,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-
-                          const SizedBox(height: 16),
-                          const Divider(),
-                          const SizedBox(height: 8),
-
-                          // Location
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.location_on,
-                                color: Colors.grey[700],
-                                size: 18,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  dog.location,
+                            // Lost time
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.access_time,
+                                  color: Colors.grey[700],
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Lost on ${dog.lostTime.day}/${dog.lostTime.month}/${dog.lostTime.year} at ${dog.lostTime.hour}:${dog.lostTime.minute.toString().padLeft(2, '0')}',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey[700],
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
 
-                          const SizedBox(height: 8),
+                            const SizedBox(height: 8),
 
-                          // Lost time
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.access_time,
-                                color: Colors.grey[700],
-                                size: 18,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Lost on ${dog.lostTime.day}/${dog.lostTime.month}/${dog.lostTime.year} at ${dog.lostTime.hour}:${dog.lostTime.minute.toString().padLeft(2, '0')}',
-                                style: TextStyle(
-                                  fontSize: 14,
+                            // Contact info
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.person,
                                   color: Colors.grey[700],
+                                  size: 18,
                                 ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 8),
-
-                          // Contact info
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.person,
-                                color: Colors.grey[700],
-                                size: 18,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Contact: ${dog.ownerName} (${dog.ownerPhone})',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[700],
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Contact: ${dog.ownerName} (${dog.ownerPhone})',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[700],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
 
-                          const SizedBox(height: 16),
+                            const SizedBox(height: 16),
 
-                          // Cancel alert button
-                          SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton.icon(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder:
-                                      (ctx) => AlertDialog(
-                                        title: const Text('Cancel Alert'),
-                                        content: const Text(
-                                          'Has your dog been found? This will remove the alert from the system.',
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed:
-                                                () => Navigator.of(ctx).pop(),
-                                            child: const Text('No'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              Provider.of<LostDogsProvider>(
-                                                context,
-                                                listen: false,
-                                              ).cancelAlert(dog);
-                                              Navigator.of(ctx).pop();
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                    'Alert cancelled. We\'re glad your dog is safe!',
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                            child: const Text('Yes'),
-                                          ),
-                                        ],
+                            // Cancel alert button
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton.icon(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                      title: const Text('Cancel Alert'),
+                                      content: const Text(
+                                        'Has your dog been found? This will remove the alert from the system.',
                                       ),
-                                );
-                              },
-                              icon: const Icon(Icons.cancel_outlined),
-                              label: const Text('CANCEL ALERT'),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: const Color(0xFF5C8D89),
-                                side: const BorderSide(
-                                  color: Color(0xFF5C8D89),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.of(ctx).pop(),
+                                          child: const Text('No'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              _lostDogService.cancelAlert(dog);
+                                            });
+                                            Navigator.of(ctx).pop();
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Alert cancelled. We\'re glad your dog is safe!',
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: const Text('Yes'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.cancel_outlined),
+                                label: const Text('CANCEL ALERT'),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: const Color(0xFF5C8D89),
+                                  side: const BorderSide(
+                                    color: Color(0xFF5C8D89),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-      ),
+                    ],
+                  ),
+                );
+              },
+            ),
     );
   }
 }

@@ -1,9 +1,11 @@
 import 'package:borktok/firebase_options.dart';
+import 'package:borktok/screens/lost%20nd%20found/providers/dog_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import 'routes/routes.dart';
 void main() async {
   try {
@@ -26,7 +28,15 @@ void main() async {
     print("Critical Error initializing app: $e");
     
   }
-  runApp(const MyApp());
+runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LostDogsProvider()),
+        ChangeNotifierProvider(create: (_) => FoundDogsProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
