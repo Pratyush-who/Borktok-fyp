@@ -5,6 +5,7 @@ import 'package:borktok/screens/buy%20and%20sell/doglisting.dart';
 import 'package:borktok/screens/login_screen.dart';
 import 'package:borktok/screens/profile_screen.dart';
 import 'package:borktok/screens/signup_screen.dart';
+import 'package:borktok/screens/unknown_page.dart'; // Import the unknown page
 import 'package:flutter/material.dart';
 import '../screens/splash_screen.dart';
 import '../screens/main_screen.dart';
@@ -33,6 +34,7 @@ class Routes {
   static const String dogListings = '/dogListings';
   static const String bookavet = '/bookavet';
   static const String ngopage = '/ngopage';
+  static const String unknown = '/unknown'; // Added unknown route constant
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -75,12 +77,15 @@ class Routes {
         return MaterialPageRoute(builder: (context) => const ReportsScreen());
       case ngopage:
         return MaterialPageRoute(builder: (context) => const NgoPage());
-      case Routes.dogListings:
+      case dogListings:
         return MaterialPageRoute(builder: (_) => const DogListingsScreen());
+      case unknown:
+        return MaterialPageRoute(builder: (_) => const UnknownPage());
 
       default:
+        // Return the unknown page with the route name that was attempted
         return MaterialPageRoute(
-          builder: (_) => const HomeScreen(), // Default to HomeScreen
+          builder: (_) => UnknownPage(routeName: settings.name),
         );
     }
   }

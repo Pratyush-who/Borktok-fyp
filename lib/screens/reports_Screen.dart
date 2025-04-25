@@ -9,8 +9,6 @@ import 'package:http/http.dart' as http;
 // Modified extension without hardcoded breeds list
 extension StringValidation on String {
   bool isValidDogBreed() {
-    // Instead of validating against a hardcoded list,
-    // just perform basic validation to ensure the input is reasonable
     final trimmed = trim();
     return trimmed.isNotEmpty && trimmed.length >= 2;
   }
@@ -350,20 +348,7 @@ Quick Health Report Sections:
       ),
       body: Column(
         children: [
-          if (!_isApiConnected)
-            Container(
-              width: double.infinity,
-              color: Colors.red.shade100,
-              padding: const EdgeInsets.all(8.0),
-              child: const Text(
-                '',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
+          
           if (_showForm)
             Expanded(
               child: SingleChildScrollView(
