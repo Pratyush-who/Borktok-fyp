@@ -8,6 +8,7 @@ import 'package:borktok/screens/login_screen.dart';
 import 'package:borktok/screens/profile_screen.dart';
 import 'package:borktok/screens/signup_screen.dart';
 import 'package:borktok/screens/unknown_page.dart'; // Import the unknown page
+import 'package:borktok/screens/vets_nearby.dart';
 import 'package:flutter/material.dart';
 import '../screens/splash_screen.dart';
 import '../screens/main_screen.dart';
@@ -38,6 +39,7 @@ class Routes {
   static const String lost = '/lost';
   static const String found = '/found';
   static const String ngopage = '/ngopage';
+  static const String vetsnearby = '/vetsnearby';
   static const String unknown = '/unknown'; // Added unknown route constant
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -54,6 +56,8 @@ class Routes {
         return MaterialPageRoute(builder: (_) => const SplashScreen());
       case main:
         return MaterialPageRoute(builder: (_) => const MainScreen());
+      case vetsnearby:
+        return MaterialPageRoute(builder: (_) => const VetsNearby());
       case home:
         // When navigating to home, prevent going back to previous screens
         return PageRouteBuilder(

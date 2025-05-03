@@ -886,7 +886,6 @@ class _BookavetpageState extends State<Bookavetpage> {
     );
   }
 
-  // Helper widget for service tile
   Widget _buildServiceTile(String service, String price) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),

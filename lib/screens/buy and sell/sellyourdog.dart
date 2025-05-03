@@ -157,7 +157,7 @@ class _SellDogScreenState extends State<SellDogScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
                             Icon(Icons.document_scanner, size: 40),
-                            Text('Upload All Vaccination Certificates'),
+                            Text('Upload Final Vaccination Certificate along with others'),
                           ],
                         )
                       : Image.file(_vaccinationCertificate!, fit: BoxFit.cover),

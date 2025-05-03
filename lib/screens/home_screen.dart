@@ -644,7 +644,7 @@ class HomeScreen extends StatelessWidget {
                   const Spacer(),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, Routes.bookavet);
+                      Navigator.pushNamed(context, Routes.vetsnearby);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,

@@ -1,3 +1,4 @@
+import 'package:borktok/screens/lost%20nd%20found/mapp.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -72,11 +73,15 @@ class _LostDogPageState extends State<LostDogPage> {
   String _currentAddress = "Fetching location...";
   double _latitude = 0.0;
   double _longitude = 0.0;
+  bool _locationFetched = false;
 
   @override
   void initState() {
     super.initState();
-    _requestLocationPermission();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _requestLocationPermission();
+    });
+
   }
 
   Future<void> _requestLocationPermission() async {
@@ -91,13 +96,12 @@ class _LostDogPageState extends State<LostDogPage> {
         _longitude = 77.4538;
       });
       
-      // Show dialog explaining why location is needed
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text('Location Permission Required'),
           content: const Text(
-            'Location permission is needed to accurately report where you found or lost your dog. This helps match lost and found pets in the same area.'
+            'Location permission is needed to accurately report where you lost your dog. This helps match lost and found pets in the same area.'
           ),
           actions: [
             TextButton(
@@ -109,7 +113,7 @@ class _LostDogPageState extends State<LostDogPage> {
             TextButton(
               onPressed: () {
                 Navigator.of(ctx).pop();
-                openAppSettings(); // Opens app settings to enable permission
+                openAppSettings();
               },
               child: const Text('Open Settings'),
             ),
@@ -123,7 +127,6 @@ class _LostDogPageState extends State<LostDogPage> {
         _longitude = 77.4538;
       });
       
-      // Guide user to settings
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -156,39 +159,35 @@ class _LostDogPageState extends State<LostDogPage> {
       _isLoading = true;
     });
 
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
 
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        position.latitude,
-        position.longitude,
-      );
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
 
-      Placemark place = placemarks[0];
-      String address =
-          '${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}';
+    Placemark place = placemarks[0];
+    String address =
+        '${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}';
 
-      setState(() {
-        _latitude = position.latitude;
-        _longitude = position.longitude;
-        _currentAddress = address;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _currentAddress = "Could not get location. Using default: Ghaziabad";
-        _latitude = 28.6692; // Default coordinates for Ghaziabad
-        _longitude = 77.4538;
-        _isLoading = false;
-      });
-    }
+    setState(() {
+      _latitude = position.latitude;
+      _longitude = position.longitude;
+      _currentAddress = address;
+      _isLoading = false;
+      _locationFetched = true;
+    });
   }
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1000,
+      imageQuality: 80,
+    );
 
     if (image != null) {
       setState(() {
@@ -270,7 +269,7 @@ class _LostDogPageState extends State<LostDogPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Location card
+                      // Location card with map
                       Card(
                         elevation: 4,
                         shape: RoundedRectangleBorder(
@@ -289,7 +288,7 @@ class _LostDogPageState extends State<LostDogPage> {
                                   ),
                                   SizedBox(width: 8),
                                   Text(
-                                    'Current Location',
+                                    'Dog Last Seen Location',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -306,10 +305,26 @@ class _LostDogPageState extends State<LostDogPage> {
                                 ),
                               ),
                               const SizedBox(height: 12),
+                              
+                              // Map view
+                              if (_locationFetched)
+                                Column(
+                                  children: [
+                                    const SizedBox(height: 8),
+                                    DogLocationMap(
+                                      latitude: _latitude,
+                                      longitude: _longitude,
+                                      title: 'Dog Last Seen Here',
+                                      height: 200,
+                                    ),
+                                    const SizedBox(height: 12),
+                                  ],
+                                ),
+                              
                               ElevatedButton.icon(
                                 onPressed: _getCurrentLocation,
                                 icon: const Icon(Icons.refresh),
-                                label: const Text('Refresh Location'),
+                                label: const Text('Update Location'),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF5C8D89),
                                   foregroundColor: Colors.white,
@@ -617,6 +632,15 @@ class _ActiveAlertsPageState extends State<ActiveAlertsPage> {
                           width: double.infinity,
                           fit: BoxFit.cover,
                         ),
+                      ),
+
+                      // Map view showing where the dog was lost
+                      DogLocationMap(
+                        latitude: dog.latitude,
+                        longitude: dog.longitude,
+                        title: '${dog.name} was last seen here',
+                        snippet: 'Lost on ${dog.lostTime.day}/${dog.lostTime.month}/${dog.lostTime.year}',
+                        height: 180,
                       ),
 
                       Padding(
