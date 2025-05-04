@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:borktok/screens/buy%20and%20sell/doglistingmodel.dart';
 import 'package:borktok/screens/buy%20and%20sell/doglistingservice.dart';
 import 'package:borktok/screens/buy%20and%20sell/sellyourdog.dart';
@@ -81,30 +80,32 @@ class _DogListingsScreenState extends State<DogListingsScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFF5D4A0)),
-              ),
-            )
-          : _dogListings.isEmpty
-              ? Center(
-                  child: Text(
-                    'No dog listings available',
-                    style: TextStyle(color: Colors.brown[700]),
-                  ),
-                )
-              : ListView.builder(
-                  itemCount: _dogListings.length,
-                  itemBuilder: (context, index) {
-                    final listing = _dogListings[index];
-                    return DogListingCard(dogListing: listing);
-                  },
+      body: RefreshIndicator(
+        onRefresh: _fetchDogListings,
+        child: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFF5D4A0)),
                 ),
+              )
+            : _dogListings.isEmpty
+                ? Center(
+                    child: Text(
+                      'No dog listings available',
+                      style: TextStyle(color: Colors.brown[700]),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: _dogListings.length,
+                    itemBuilder: (context, index) {
+                      final listing = _dogListings[index];
+                      return DogListingCard(dogListing: listing);
+                    },
+                  ),
+      ),
     );
   }
 }
-
 
 class DogListingCard extends StatelessWidget {
   final DogListing dogListing;
@@ -113,27 +114,45 @@ class DogListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Decode base64 image
-    final imageBytes =
-        dogListing.imageBase64.isNotEmpty
-            ? base64Decode(dogListing.imageBase64)
-            : null;
-
     return Card(
       margin: const EdgeInsets.all(8),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Dog Image
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child:
-                imageBytes != null
-                    ? Image.memory(imageBytes, fit: BoxFit.cover)
-                    : Container(
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.broken_image, size: 50),
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Image.network(
+                dogListing.imageUrl,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                          : null,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).primaryColor,
+                      ),
                     ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey[200],
+                    child: const Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                  );
+                },
+              ),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(12),
@@ -143,7 +162,11 @@ class DogListingCard extends StatelessWidget {
                 // Dog Name and Breed
                 Text(
                   '${dogListing.name} - ${dogListing.breed}',
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.brown[800],
+                  ),
                 ),
                 const SizedBox(height: 8),
 
@@ -173,37 +196,86 @@ class DogListingCard extends StatelessWidget {
                 // Price and Description
                 Text(
                   '\$${dogListing.price.toStringAsFixed(2)}',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Theme.of(context).primaryColor,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.brown[900],
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   dogListing.description,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: TextStyle(color: Colors.brown[700]),
                 ),
                 const SizedBox(height: 8),
 
                 // Owner Info
                 Row(
                   children: [
-                    const CircleAvatar(
-                      backgroundColor: Colors.grey,
-                      child: Icon(Icons.person, color: Colors.white),
+                    CircleAvatar(
+                      backgroundColor: Colors.grey[300],
+                      child: Icon(Icons.person, color: Colors.brown[800]),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'Listed by ${dogListing.ownerName}',
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: TextStyle(color: Colors.brown[600]),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${_getTimeAgo(dogListing.datePosted)}',
+                      style: TextStyle(
+                        color: Colors.grey[600], 
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
+                
+                // Vaccination status indicator (if certificate exists)
+                if (dogListing.vaccinationCertificateUrl != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.verified, 
+                          color: Colors.green[700], 
+                          size: 16
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Vaccination verified',
+                          style: TextStyle(
+                            color: Colors.green[700],
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+  
+  String _getTimeAgo(DateTime dateTime) {
+    final difference = DateTime.now().difference(dateTime);
+    
+    if (difference.inDays > 30) {
+      return '${(difference.inDays / 30).floor()} month(s) ago';
+    } else if (difference.inDays > 0) {
+      return '${difference.inDays} day(s) ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} hour(s) ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} minute(s) ago';
+    } else {
+      return 'Just now';
+    }
   }
 }

@@ -1,17 +1,20 @@
 import 'dart:io';
-import 'dart:convert';
 import 'package:borktok/screens/buy%20and%20sell/doglistingmodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloudinary_public/cloudinary_public.dart';
 
 class DogListingService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Static list of dogs for sale (updated to use base64)
+  // Initialize Cloudinary with your cloud name and upload preset
+  // You'll need to create an unsigned upload preset in your Cloudinary dashboard
+  final cloudinary = CloudinaryPublic('dteigt5oc', 'ml_default');
+
+  // Static list of dogs for sale (updated to use URLs)
   static List<DogListing> staticDogListings = [
     DogListing(
       id: '1',
       name: 'Max',
-      vaccinationCertificateBase64: '',
       breed: 'Golden Retriever',
       age: 3,
       gender: 'Male',
@@ -19,27 +22,31 @@ class DogListingService {
       price: 1500.00,
       description:
           'Friendly and energetic Golden Retriever. Great with children and loves to play fetch. Fully vaccinated and trained.',
-      imageBase64: '', // You would put base64 encoded image here
+      imageUrl:
+          'https://res.cloudinary.com/demo/image/upload/v1/samples/animals/dog',
+      vaccinationCertificateUrl: null,
       ownerId: 'owner1',
       ownerName: 'John Doe',
-      datePosted: DateTime.now().subtract(Duration(days: 5)), 
+      datePosted: DateTime.now().subtract(Duration(days: 5)),
     ),
   ];
 
   Future<List<DogListing>> getAllDogListings() async {
     try {
-      final querySnapshot = await _firestore
-          .collection('dog_listings')
-          .orderBy('datePosted', descending: true)
-          .get();
+      final querySnapshot =
+          await _firestore
+              .collection('dog_listings')
+              .orderBy('datePosted', descending: true)
+              .get();
 
-      List<DogListing> firestoreListings = querySnapshot.docs
-          .map((doc) => DogListing.fromFirestore(doc.data(), doc.id))
-          .toList();
+      List<DogListing> firestoreListings =
+          querySnapshot.docs
+              .map((doc) => DogListing.fromFirestore(doc.data(), doc.id))
+              .toList();
 
       List<DogListing> combinedListings = [
         ...staticDogListings,
-        ...firestoreListings
+        ...firestoreListings,
       ];
 
       final uniqueListings = <DogListing>[];
@@ -62,17 +69,10 @@ class DogListingService {
     }
   }
 
-  Future<void> addDogListing(
-    DogListing dogListing,
-    File imageFile, {
-    File? vaccinationCertificate,
-  }) async {
+  // Upload image to Cloudinary and return the URL
+  Future<String> _uploadImageToCloudinary(File imageFile, String folder) async {
     try {
       // Validate image file
-      if (imageFile == null) {
-        throw Exception('No image file provided');
-      }
-
       if (!imageFile.existsSync()) {
         throw Exception('Image file does not exist: ${imageFile.path}');
       }
@@ -82,18 +82,38 @@ class DogListingService {
         throw Exception('Image file is empty');
       }
 
-      // Convert image to base64
-      final imageBytes = await imageFile.readAsBytes();
-      final imageBase64 = base64Encode(imageBytes);
+      // Upload to Cloudinary
+      final response = await cloudinary.uploadFile(
+        CloudinaryFile.fromFile(imageFile.path, folder: folder),
+      );
 
-      // Optional: Convert vaccination certificate to base64
-      String? vaccinationCertBase64;
+      // Return secure URL
+      return response.secureUrl;
+    } catch (e) {
+      print('Error uploading image to Cloudinary: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> addDogListing(
+    DogListing dogListing,
+    File imageFile, {
+    File? vaccinationCertificate,
+  }) async {
+    try {
+      // Upload dog image to Cloudinary
+      final imageUrl = await _uploadImageToCloudinary(imageFile, 'dog_images');
+
+      // Upload vaccination certificate if provided
+      String? vaccinationUrl;
       if (vaccinationCertificate != null) {
-        final certBytes = await vaccinationCertificate.readAsBytes();
-        vaccinationCertBase64 = base64Encode(certBytes);
+        vaccinationUrl = await _uploadImageToCloudinary(
+          vaccinationCertificate,
+          'vaccination_certificates',
+        );
       }
 
-      // Create final listing with base64 images
+      // Create final listing with image URLs
       final finalListing = DogListing(
         id: '', // Firestore will generate the ID
         name: dogListing.name,
@@ -103,15 +123,17 @@ class DogListingService {
         location: dogListing.location,
         price: dogListing.price,
         description: dogListing.description,
-        imageBase64: imageBase64,
+        imageUrl: imageUrl,
+        vaccinationCertificateUrl: vaccinationUrl,
         ownerId: dogListing.ownerId,
         ownerName: dogListing.ownerName,
         datePosted: DateTime.now(),
-        vaccinationCertificateBase64: vaccinationCertBase64 ?? '', 
       );
 
       // Add to Firestore
-      await _firestore.collection('dog_listings').add(finalListing.toFirestore());
+      await _firestore
+          .collection('dog_listings')
+          .add(finalListing.toFirestore());
 
       print('Dog listing added successfully');
     } catch (e) {
