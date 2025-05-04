@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dog Help Request</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-light: rgba(76, 175, 80, 0.1);
+            --text-dark: #212121;
+            --text-medium: #757575;
+            --text-light: #9E9E9E;
+            --background-light: #F5F5F5;
+            --white: #FFFFFF;
+            --border-radius: 12px;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .header-title i {
+            margin-right: 10px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .alerts-button {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 12px;
+            margin-right: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .alerts-button i {
+            margin-right: 5px;
+        }
+
+        .alerts-count {
+            background-color: #ff5722;
+            border-radius: 50%;
+            font-size: 10px;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 5px;
+        }
+
+        .points-display {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .points-display i {
+            color: #FFD700;
+            margin-right: 5px;
+        }
+
+        /* Main content */
+        .content {
+            padding: 16px;
+        }
+
+        /* Search bar */
+        .search-bar {
+            width: 100%;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            border: 1px solid #E0E0E0;
+            background-color: var(--white);
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Help Request Card */
+        .help-request-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-title i {
+            color: var(--primary-color);
+            margin-right: 8px;
+        }
+
+        .card-title h2 {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-medium);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            border: 1px solid #E0E0E0;
+            font-size: 16px;
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Button */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: #43A047;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        /* NGO Section */
+        .section-header {
+            margin-bottom: 16px;
+        }
+
+        .section-header h2 {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .section-header p {
+            color: var(--text-medium);
+            font-size: 14px;
+        }
+
+        /* NGO Cards */
+        .ngo-cards {
+            margin-bottom: 24px;
+        }
+
+        .ngo-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+            display: flex;
+        }
+
+        .ngo-icon {
+            width: 64px;
+            height: 64px;
+            background-color: var(--primary-light);
+            border-radius: var(--border-radius);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 16px;
+        }
+
+        .ngo-icon i {
+            color: var(--primary-color);
+            font-size: 32px;
+        }
+
+        .ngo-info {
+            flex: 1;
+        }
+
+        .ngo-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .ngo-description {
+            font-size: 14px;
+            color: var(--text-medium);
+            margin-bottom: 8px;
+        }
+
+        .ngo-meta {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .ngo-rating {
+            display: flex;
+            align-items: center;
+            margin-right: 16px;
+        }
+
+        .ngo-rating i {
+            color: #FFC107;
+            margin-right: 4px;
+            font-size: 16px;
+        }
+
+        .ngo-points {
+            display: flex;
+            align-items: center;
+            background-color: var(--primary-light);
+            padding: 2px 8px;
+            border-radius: 12px;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .ngo-points i {
+            margin-right: 4px;
+            font-size: 12px;
+        }
+
+        .ngo-donation {
+            font-size: 12px;
+            color: #4CAF50;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .ngo-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .action-button {
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            padding: 8px;
+        }
+
+        .action-label {
+            font-size: 12px;
+            color: var(--primary-color);
+        }
+
+        /* Loading indicator */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid var(--primary-color);
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Success modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            padding: 24px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-icon {
+            color: #4CAF50;
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .modal-message {
+            margin-bottom: 24px;
+            color: var(--text-medium);
+        }
+
+        .modal-button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Alerts Modal Styles */
+        .alerts-list {
+            margin-top: 16px;
+            text-align: left;
+        }
+
+        .alert-item {
+            background-color: var(--background-light);
+            border-radius: var(--border-radius);
+            padding: 12px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .alert-location {
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .alert-date {
+            color: var(--text-light);
+            font-size: 12px;
+        }
+
+        .alert-description {
+            color: var(--text-medium);
+            margin-bottom: 8px;
+        }
+
+        .alert-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background-color: #FFF3E0;
+            color: #FF9800;
+        }
+
+        .status-active {
+            background-color: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .status-resolved {
+            background-color: #ECEFF1;
+            color: #607D8B;
+        }
+
+        .alert-actions {
+            display: flex;
+            margin-top: 8px;
+        }
+
+        .alert-action-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px 8px;
+            margin-right: 8px;
+            border-radius: 12px;
+            background-color: var(--primary-light);
+        }
+
+        .no-alerts {
+            text-align: center;
+            color: var(--text-medium);
+            padding: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <i class="fas fa-paw"></i>
+                <span>Dog NGOs</span>
+            </div>
+            <div class="header-right">
+                <button id="alerts-button" class="alerts-button">
+                    <i class="fas fa-bell"></i>
+                    <span>Alerts</span>
+                    <span id="alerts-count" class="alerts-count">0</span>
+                </button>
+                <div class="points-display">
+                    <i class="fas fa-coins"></i>
+                    <span id="points-counter">600 points</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Search Bar -->
+            <input type="text" class="search-bar" placeholder="Search NGOs...">
+
+            <!-- Help Request Form -->
+            <div class="help-request-card">
+                <div class="card-title">
+                    <i class="fas fa-paw"></i>
+                    <h2>Request Help for a Dog</h2>
+                </div>
+
+                <form id="help-request-form">
+                    <div class="form-group">
+                        <label for="location">Your Location</label>
+                        <div class="input-with-icon">
+                            <input type="text" id="location" class="form-control" placeholder="Enter your location" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Describe the situation</label>
+                        <textarea id="description" class="form-control" placeholder="Is the dog injured? Abandoned? Needs adoption?" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Request to Nearby NGOs
+                    </button>
+                </form>
+            </div>
+
+            <!-- NGO Section -->
+            <div class="section-header">
+                <h2>Supporting Organizations</h2>
+                <p>Select an NGO to learn more or donate points</p>
+            </div>
+
+            <!-- NGO Cards -->
+            <div class="ngo-cards" id="ngo-list">
+                <!-- NGO cards will be inserted here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="modal-title">Request Sent!</h3>
+            <p class="modal-message">Your request has been sent to nearby NGOs. You earned 50 points for reporting!</p>
+            <button id="modal-close" class="modal-button">OK</button>
+        </div>
+    </div>
+
+    <!-- Alerts Modal -->
+    <div id="alerts-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Your Raised Alerts</h3>
+            <p class="modal-message">Track the status of your dog help requests</p>
+            
+            <div id="alerts-list" class="alerts-list">
+                <!-- Alerts will be inserted here by JavaScript -->
+                <div class="no-alerts">No alerts yet. Report a dog in need to create an alert.</div>
+            </div>
+            
+            <button id="alerts-modal-close" class="modal-button">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // NGO Data (from your Flutter code)
+        const ngos = [
+            {
+                id: 1,
+                name: 'Paws Rescue Center',
+                description: 'Shelter and adoption services for stray dogs',
+                longDescription: 'Paws Rescue Center has been operating since 2010 with a mission to provide shelter, medical care, and forever homes for stray and abandoned dogs. We have rescued over 5,000 dogs and successfully rehomed more than 4,200 of them. Our center includes a veterinary clinic, spacious kennels, and a dog training area. We rely heavily on donations and volunteers to continue our mission.',
+                icon: 'home',
+                address: '123 Rescue Lane, New York, NY 10001',
+                phone: '+1 (212) 555-1234',
+                email: 'info@pawsrescue.org',
+                website: 'www.pawsrescue.org',
+                pointsRequired: 200,
+                rating: 4.8,
+                reviews: 120,
+                imageUrl: 'paws_rescue.jpg',
+                donated: 0
+            },
+            {
+                id: 2,
+                name: 'Happy Tails Foundation',
+                description: 'Medical treatment for injured street dogs',
+                longDescription: 'Happy Tails Foundation specializes in providing emergency medical care and rehabilitation for injured and sick street dogs. Our team of veterinarians and animal care specialists work around the clock to treat animals in need. We also conduct sterilization campaigns to control the street dog population humanely. Since our founding in 2015, we have treated over 10,000 dogs and conducted more than 7,500 sterilization procedures.',
+                icon: 'medkit',
+                address: '456 Healing Ave, Boston, MA 02108',
+                phone: '+1 (617) 555-6789',
+                email: 'care@happytails.org',
+                website: 'www.happytails.org',
+                pointsRequired: 150,
+                rating: 4.6,
+                reviews: 95,
+                imageUrl: 'happy_tails.jpg',
+                donated: 0
+            },
+            {
+                id: 3,
+                name: 'Canine Care Coalition',
+                description: 'Food and welfare programs for dogs in need',
+                longDescription: 'Canine Care Coalition focuses on providing nutritious food and basic welfare services to street dogs and pets of economically disadvantaged families. We distribute over 5 tons of dog food monthly and provide free vaccinations and parasite control treatments. Our community education programs promote responsible pet ownership and compassion toward animals. We also work with local governments to improve animal welfare policies.',
+                icon: 'utensils',
+                address: '789 Welfare Road, San Francisco, CA 94103',
+                phone: '+1 (415) 555-4321',
+                email: 'help@caninecare.org',
+                website: 'www.caninecare.org',
+                pointsRequired: 120,
+                rating: 4.7,
+                reviews: 108,
+                imageUrl: 'canine_care.jpg',
+                donated: 0
+            },
+            {
+                id: 4,
+                name: 'Second Chance Dogs',
+                description: 'Rehabilitation and rehoming for abused dogs',
+                longDescription: 'Second Chance Dogs specializes in the rehabilitation of abused and traumatized dogs, helping them overcome their fears and behavioral issues through positive reinforcement training and therapy. Our team includes animal behaviorists and trained handlers who provide individualized care plans for each dog. We have a sprawling 5-acre facility with specialized areas for different rehabilitation activities. Since 2012, we have helped over 3,000 dogs find loving homes.',
+                icon: 'heart',
+                address: '321 Hope Street, Seattle, WA 98101',
+                phone: '+1 (206) 555-8765',
+                email: 'info@secondchancedogs.org',
+                website: 'www.secondchancedogs.org',
+                pointsRequired: 180,
+                rating: 4.9,
+                reviews: 132,
+                imageUrl: 'second_chance.jpg',
+                donated: 0
+            },
+            {
+                id: 5,
+                name: 'Senior Paws Sanctuary',
+                description: 'Care for elderly and special needs dogs',
+                longDescription: 'Senior Paws Sanctuary provides a loving and comfortable environment for elderly dogs and those with special needs that might otherwise be overlooked for adoption. Our facility features heated floors, orthopedic beds, and easy access to outdoor areas. We provide specialized medical care, pain management, and mobility assistance. Many of our residents live out their golden years with us, while others find special adoptive homes with people who understand their unique needs.',
+                icon: 'user',
+                address: '567 Golden Years Ave, Denver, CO 80202',
+                phone: '+1 (303) 555-2468',
+                email: 'care@seniorpaws.org',
+                website: 'www.seniorpaws.org',
+                pointsRequired: 160,
+                rating: 4.7,
+                reviews: 89,
+                imageUrl: 'senior_paws.jpg',
+                donated: 0
+            }
+        ];
+
+        // Alert statuses
+        const ALERT_STATUS = {
+            PENDING: 'pending',
+            ACTIVE: 'active',
+            RESOLVED: 'resolved'
+        };
+
+        // Global state
+        let userPoints = 600;
+        let userAlerts = [];
+
+        // DOM Elements
+        const pointsCounter = document.getElementById('points-counter');
+        const helpRequestForm = document.getElementById('help-request-form');
+        const locationInput = document.getElementById('location');
+        const descriptionInput = document.getElementById('description');
+        const ngoListContainer = document.getElementById('ngo-list');
+        const successModal = document.getElementById('success-modal');
+        const modalCloseButton = document.getElementById('modal-close');
+        
+        // Alert elements
+        const alertsButton = document.getElementById('alerts-button');
+        const alertsCountDisplay = document.getElementById('alerts-count');
+        const alertsModal = document.getElementById('alerts-modal');
+        const alertsModalCloseButton = document.getElementById('alerts-modal-close');
+        const alertsList = document.getElementById('alerts-list');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load user points from localStorage
+            const savedPoints = localStorage.getItem('userPoints');
+            if (savedPoints) {
+                userPoints = parseInt(savedPoints);
+                updatePointsDisplay();
+            }
+
+            // Load NGO donations from localStorage
+            ngos.forEach(ngo => {
+                const donatedAmount = localStorage.getItem(`ngoDonation_${ngo.id}`);
+                if (donatedAmount) {
+                    ngo.donated = parseInt(donatedAmount);
+                }
+            });
+
+            // Load alerts from localStorage
+            loadAlerts();
+
+            // Render NGO list
+            renderNGOList();
+
+            // Try to get user's location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        // Get city name from coordinates using reverse geocoding
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.address) {
+                                    const city = data.address.city || data.address.town || data.address.village || '';
+                                    const state = data.address.state || '';
+                                    locationInput.value = city ? `${city}, ${state}` : '';
+                                }
+                            })
+                            .catch(error => console.error('Error getting location name:', error));
+                    },
+                    (error) => {
+                        console.log('Error getting location:', error);
+                    }
+                );
+            }
+
+            // Set up event listeners
+            alertsButton.addEventListener('click', () => {
+                renderAlertsList();
+                alertsModal.style.display = 'flex';
+            });
+
+            alertsModalCloseButton.addEventListener('click', () => {
+                alertsModal.style.display = 'none';
+            });
+        });
+
+        // Form submission handler
+        helpRequestForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Validate form
+            if (!locationInput.value || !descriptionInput.value) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            // Submit the form (in a real app, this would be sent to a server)
+            submitHelpRequest(locationInput.value, descriptionInput.value);
+        });
+
+        // Close modal button
+        modalCloseButton.addEventListener('click', () => {
+            successModal.style.display = 'none';
+        });
+
+        // Submit help request
+        function submitHelpRequest(location, description) {
+            // Add loading state to button
+            const submitButton = helpRequestForm.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.innerHTML;
+            submitButton.innerHTML = '<span class="loader"></span> Sending...';
+            submitButton.disabled = true;
+
+            // Simulate API call with setTimeout
+            setTimeout(() => {
+                // Reset form
+                helpRequestForm.reset();
+                
+                // Reset button
+                submitButton.innerHTML = originalButtonText;
+                submitButton.disabled = false;
+
+                // Add points for reporting
+                addPoints(50);
+
+                // Create a new alert
+                const newAlert = {
+                    id: Date.now().toString(),
+                    location: location,
+                    description: description,
+                    date: new Date().toISOString(),
+                    status: ALERT_STATUS.PENDING,
+                    assignedNgo: null,
+                    updates: []
+                };
+
+                // Add to alerts and save
+                userAlerts.push(newAlert);
+                saveAlerts();
+
+                // Show success modal
+                showSuccessModal();
+            }, 1500);
+        }
+
+        // Render NGO list
+        function renderNGOList() {
+            ngoListContainer.innerHTML = '';
+            
+            ngos.forEach(ngo => {
+                // Calculate points required based on donations
+                let pointsRequired = ngo.pointsRequired;
+                if (ngo.donated > 0) {
+                    const reduction = Math.round(ngo.donated * 0.1);
+                    pointsRequired = Math.max(50, ngo.pointsRequired - reduction);
+                }
+
+                const ngoCard = document.createElement('div');
+                ngoCard.className = 'ngo-card';
+                ngoCard.innerHTML = `
+                    <div class="ngo-icon">
+                        <i class="fas fa-${ngo.icon}"></i>
+                    </div>
+                    <div class="ngo-info">
+                        <div class="ngo-name">${ngo.name}</div>
+                        <div class="ngo-description">${ngo.description}</div>
+                        <div class="ngo-meta">
+                            <div class="ngo-rating">
+                                <i class="fas fa-star"></i>
+                                <span>${ngo.rating} (${ngo.reviews})</span>
+                            </div>
+                            <div class="ngo-points">
+                                <i class="fas fa-coins"></i>
+                                <span>${pointsRequired} points</span>
+                            </div>
+                        </div>
+                        ${ngo.donated > 0 ? `<div class="ngo-donation">You donated: ${ngo.donated} points</div>` : ''}
+                    </div>
+                    <div class="ngo-action">
+                        <button class="action-button" onclick="handleDonation(${ngo.id})">
+                            <i class="fas fa-hand-holding-heart"></i>
+                        </button>
+                        <span class="action-label">Donate</span>
+                    </div>
+                `;
+                
+                ngoListContainer.appendChild(ngoCard);
+            });
+        }
+
+        // Handle donation to NGO
+        function handleDonation(ngoId) {
+            const ngo = ngos.find(n => n.id === ngoId);
+            if (!ngo) return;
+
+            // Calculate points required based on donations
+            let pointsRequired = ngo.pointsRequired;
+            if (ngo.donated > 0) {
+                const reduction = Math.round(ngo.donated * 0.1);
+                pointsRequired = Math.max(50, ngo.pointsRequired - reduction);
+            }
+
+            // Check if user has enough points
+            if (userPoints < pointsRequired) {
+                showInsufficientPointsModal();
+                return;
+            }
+
+            // Show donation confirmation
+            if (confirm(`Donate ${pointsRequired} points to ${ngo.name}?`)) {
+                // Deduct points
+                deductPoints(pointsRequired);
+                
+                // Record donation
+                ngo.donated += pointsRequired;
+                localStorage.setItem(`ngoDonation_${ngo.id}`, ngo.donated);
+                
+                // Show success
+                alert(`Thank you for donating to ${ngo.name}!`);
+                
+                // Update NGO list
+                renderNGOList();
+            }
+        }
+
+        // Update points counter
+        function updatePointsDisplay() {
+            pointsCounter.textContent = `${userPoints} points`;
+            localStorage.setItem('userPoints', userPoints);
+        }
+
+        // Add points to user
+        function addPoints(amount) {
+            userPoints += amount;
+            updatePointsDisplay();
+        }
+
+        // Deduct points from user
+        function deductPoints(amount) {
+            userPoints -= amount;
+            updatePointsDisplay();
+        }
+
+        // Show success modal
+        function showSuccessModal() {
+            successModal.style.display = 'flex';
+        }
+
+        // Show insufficient points modal
+        function showInsufficientPointsModal() {
+            alert("You don't have enough points to make this donation. Complete more dog-related activities to earn points!");
+        }
+
+        // Load alerts from localStorage
+        function loadAlerts() {
+            const savedAlerts = localStorage.getItem('userAlerts');
+            if (savedAlerts) {
+                userAlerts = JSON.parse(savedAlerts);
+                updateAlertsCountDisplay();
+            }
+            
+            // Add some demo alerts if none exist
+            if (userAlerts.length === 0) {
+                // Add demo alerts
+                const demoAlerts = [
+                    {
+                        id: 'demo1',
+                        location: 'Central Park, New York',
+                        description: 'Found a limping golden retriever near the lake. Appears to be lost.',
+                        date: new Date(2025, 4, 1).toISOString(),
+                        status: ALERT_STATUS.ACTIVE,
+                        assignedNgo: 'Paws Rescue Center',
+                        updates: [
+                            {
+                                date: new Date(2025, 4, 1).toISOString(),
+                                message: 'Alert received, looking for the dog in the area.'
+                            },
+                            {
+                                date: new Date(2025, 4, 2).toISOString(),
+                                message: 'Dog found and brought to our shelter.'
+                            }
+                        ]
+                    },
+                    {
+                        id: 'demo2',
+                        location: 'Downtown Seattle',
+                        description: 'Three puppies abandoned in a box near Pike Place Market.',
+                        date: new Date(2025, 3, 25).toISOString(),
+                        status: ALERT_STATUS.RESOLVED,
+                        assignedNgo: 'Second Chance Dogs',
+                        updates: [
+                            {
+                                date: new Date(2025, 3, 25).toISOString(),
+                                message: 'Alert received, sending team to the location.'
+                            },
+                            {
+                                date: new Date(2025, 3, 25).toISOString(),
+                                message: 'Puppies rescued and brought to our shelter.'
+                            },
+                            {
+                                date: new Date(2025, 3, 28).toISOString(),
+                                message: 'All puppies have received medical care and are in foster homes.'
+                            }
+                        ]
+                    }
+                ];
+                
+                userAlerts = demoAlerts;
+                saveAlerts();
+            }
+        }
+
+        // Save alerts to localStorage
+        function saveAlerts() {
+            localStorage.setItem('userAlerts', JSON.stringify(userAlerts));
+            updateAlertsCountDisplay();
+        }
+
+        // Update alerts count display
+        function updateAlertsCountDisplay() {
+            const activeAlerts = userAlerts.filter(alert => 
+                alert.status === ALERT_STATUS.PENDING || 
+                alert.status === ALERT_STATUS.ACTIVE
+            ).length;
+            
+            alertsCountDisplay.textContent = activeAlerts;
+            
+            // Show alert count only if there are active alerts
+            alertsCountDisplay.style.display = activeAlerts > 0 ? 'flex' : 'none';
+        }
+
+        // Render alerts list
+        function renderAlertsList() {
+            if (userAlerts.length === 0) {
+                alertsList.innerHTML = '<div class="no-alerts">No alerts yet. Report a dog in need to create an alert.</div>';
+                return;
+            }
+            
+            // Sort alerts by date (newest first) and status (pending first, then active, then resolved)
+            const sortedAlerts = [...userAlerts].sort((a, b) => {
+                // First sort by status priority
+                const statusPriority = {
+                    [ALERT_STATUS.PENDING]: 0,
+                    [ALERT_STATUS.ACTIVE]: 1,
+                    [ALERT_STATUS.RESOLVED]: 2
+                };
+                
+                const statusDiff = statusPriority[a.status] - statusPriority[b.status];
+                if (statusDiff !== 0) return statusDiff;
+                
+                // Then sort by date (newest first)
+                return new Date(b.date) - new Date(a.date);
+            });
+            
+            alertsList.innerHTML = '';
+            
+            sortedAlerts.forEach(alert => {
+                const alertItem = document.createElement('div');
+                alertItem.className = 'alert-item';
+                
+                let statusClass = '';
+                let statusText = '';
+                
+                switch (alert.status) {
+                    case ALERT_STATUS.PENDING:
+                        statusClass = 'status-pending';
+                        statusText = 'Pending';
+                        break;
+                    case ALERT_STATUS.ACTIVE:
+                        statusClass = 'status-active';
+                        statusText = 'Active';
+                        break;
+                    case ALERT_STATUS.RESOLVED:
+                        statusClass = 'status-resolved';
+                        statusText = 'Resolved';
+                        break;
+                }
+                
+                const formattedDate = new Date(alert.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                alertItem.innerHTML = `
+                    <div class="alert-header">
+                        <div class="alert-location">${alert.location}</div>
+                        <div class="alert-date">${formattedDate}</div>
+                    </div>
+                    <div class="alert-description">${alert.description}</div>
+                    <div class="alert-status ${statusClass}">${statusText}</div>
+                    ${alert.assignedNgo ? `<div class="alert-assigned">Assigned to: ${alert.assignedNgo}</div>` : ''}
+                    
+                    <div class="alert-actions">
+                        ${alert.status !== ALERT_STATUS.RESOLVED ? 
+                            `<button class="alert-action-btn" onclick="markAlertResolved('${alert.id}')">
+                                <i class="fas fa-check"></i> Mark Resolved
+                            </button>` : ''}
+                    </div>
+                `;
+                
+                alertsList.appendChild(alertItem);
+            });
+        }
+
+        // Mark alert as resolved
+        function markAlertResolved(alertId) {
+            const alertIndex = userAlerts.findIndex(a => a.id === alertId);
+            if (alertIndex !== -1) {
+                userAlerts[alertIndex].status = ALERT_STATUS.RESOLVED;
+                userAlerts[alertIndex].updates = userAlerts[alertIndex].updates || [];
+                userAlerts[alertIndex].updates.push({
+                    date: new Date().toISOString(),
+                    message: 'Marked as resolved by user.'
+                });
+
+                saveAlerts();
+                renderAlertsList();
+            }
+        }
+
+        // Double-tap to reset points (for testing)
+        let lastTap = 0;
+        pointsCounter.addEventListener('click', function(e) {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            if (tapLength < 300 && tapLength > 0) {
+                // Double tap detected
+                userPoints = 600;
+                updatePointsDisplay();
+                alert('Points reset to 600');
+            }
+            lastTap = currentTime;
+        });
+
+        // Handle NGO card click for details
+        document.addEventListener('click', function(e) {
+            const ngoCard = e.target.closest('.ngo-card');
+            const actionButton = e.target.closest('.action-button');
+            
+            if (ngoCard && !actionButton) {
+                const ngoName = ngoCard.querySelector('.ngo-name').textContent;
+                const ngo = ngos.find(n => n.name === ngoName);
+                if (ngo) {
+                    showNGODetails(ngo);
+                }
+            }
+        });
+
+        function showNGODetails(ngo) {
+            // In a real app, this would show a detailed modal
+            alert(`
+                ${ngo.name}
+                
+                ${ngo.longDescription}
+                
+                Contact:
+                Address: ${ngo.address}
+                Phone: ${ngo.phone}
+                Email: ${ngo.email}
+                Website: ${ngo.website}
+            `);
+        }
+    </script>
+</body>
+</html>
