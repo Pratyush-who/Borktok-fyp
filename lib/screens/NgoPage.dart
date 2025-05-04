@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart'; // Add this import
 
 class NgoPage extends StatefulWidget {
   const NgoPage({Key? key}) : super(key: key);
@@ -10,6 +11,9 @@ class NgoPage extends StatefulWidget {
 }
 
 class _NgoPageState extends State<NgoPage> {
+  // Website URL to open
+  final String websiteUrl = 'https://m0j3gxq8-5500.inc1.devtunnels.ms/';
+  
   final List<NgoModel> ngos = [
     NgoModel(
       id: 1,
@@ -27,6 +31,7 @@ class _NgoPageState extends State<NgoPage> {
       reviews: 120,
       imageUrl: 'assets/paws_rescue.jpg',
     ),
+    // Other NGO models remain the same...
     NgoModel(
       id: 2,
       name: 'Happy Tails Foundation',
@@ -188,6 +193,25 @@ class _NgoPageState extends State<NgoPage> {
 
     return calculatedPointsRequired;
   }
+  
+  // Function to launch URL
+  Future<void> _launchUrl() async {
+    final Uri url = Uri.parse(websiteUrl);
+    
+    try {
+      if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+        throw Exception('Could not launch $url');
+      }
+    } catch (e) {
+      // Show error message if URL launch fails
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Could not open website: $e'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -204,13 +228,12 @@ class _NgoPageState extends State<NgoPage> {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // App Bar
+            // App Bar with website navigation button
             SliverAppBar(
               backgroundColor: Theme.of(context).primaryColor,
               pinned: true,
               title: Row(
                 children: [
-                  Icon(Icons.volunteer_activism, color: Colors.white),
                   SizedBox(width: 10),
                   Text(
                     'Dog NGOs',
@@ -222,6 +245,13 @@ class _NgoPageState extends State<NgoPage> {
                 ],
               ),
               actions: [
+                // Website navigation button
+                IconButton(
+                  icon: Icon(Icons.language, color: Colors.white),
+                  tooltip: 'Visit Pet Adoption Website',
+                  onPressed: _launchUrl,
+                ),
+                
                 // Points display with double-tap reset functionality
                 GestureDetector(
                   onDoubleTap: _resetUserPoints, // Reset points on double tap
@@ -254,6 +284,7 @@ class _NgoPageState extends State<NgoPage> {
               ],
             ),
 
+            // Rest of the code remains the same...
             // Search and Filter
             SliverToBoxAdapter(
               child: Padding(
@@ -322,8 +353,8 @@ class _NgoPageState extends State<NgoPage> {
               }, childCount: ngos.length),
             ),
             SliverToBoxAdapter(
-            child: _buildFeedbackForm(),
-          ),
+              child: _buildFeedbackForm(),
+            ),
             // Extra space at bottom
             SliverToBoxAdapter(child: SizedBox(height: 10)),
           ],
